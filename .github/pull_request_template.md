@@ -18,4 +18,4 @@ Closes #
 ```bash
 uv run ruff check
 uv run pytest -q
-
+```
