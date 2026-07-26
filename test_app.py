@@ -1,4 +1,4 @@
-from app import add, subtract
+from app import add, multiply, subtract
 
 
 def test_add():
@@ -23,3 +23,11 @@ def test_subtract():
 
 def test_subtract_negative_result():
     assert subtract(2, 5) == -3
+
+
+def test_multiply():
+    assert multiply(3, 4) == 12
+
+
+def test_multiply_by_zero():
+    assert multiply(5, 0) == 0
