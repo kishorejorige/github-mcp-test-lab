@@ -1,6 +1,7 @@
 # GitHub MCP Test Lab
 
 [![CI](https://github.com/kishorejorige/github-mcp-test-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/kishorejorige/github-mcp-test-lab/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/kishorejorige/github-mcp-test-lab/actions/workflows/codeql.yml/badge.svg)](https://github.com/kishorejorige/github-mcp-test-lab/actions/workflows/codeql.yml)
 
 This repo is a small lab for practicing AI + GitHub + DevOps workflows.
 
@@ -133,3 +134,4 @@ This project shows practical DevOps and GitHub workflow skills:
 * Add automatic PR templates
 * Add MCP-based GitHub agent integration
 * Add more automation commands
+* Add release tags
