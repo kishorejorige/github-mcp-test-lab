@@ -1,4 +1,4 @@
-from app import add
+from app import add, subtract
 
 
 def test_add():
@@ -15,3 +15,11 @@ def test_add_zero():
 
 def test_add_mixed_numbers():
     assert add(-2, 7) == 5
+
+
+def test_subtract():
+    assert subtract(5, 2) == 3
+
+
+def test_subtract_negative_result():
+    assert subtract(2, 5) == -3
