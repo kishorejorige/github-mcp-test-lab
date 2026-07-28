@@ -13,7 +13,7 @@ Issue → Branch → Code → Ruff → Pytest → Pull Request → CI → Merge
 
 ## Features
 
-* Simple Python math functions
+* Simple Python math functions: add, subtract, multiply, and divide
 * Pytest test suite
 * Ruff linting
 * GitHub Actions CI
@@ -130,8 +130,6 @@ This project shows practical DevOps and GitHub workflow skills:
 ## Next Improvements
 
 * Add branch protection rules
-* Add CodeQL security scanning
-* Add automatic PR templates
 * Add MCP-based GitHub agent integration
 * Add more automation commands
 * Add release tags
