@@ -1,6 +1,6 @@
 import pytest
 
-from app import add, divide, multiply, subtract
+from app import add, divide, multiply, power, subtract
 
 
 def test_add():
@@ -46,3 +46,11 @@ def test_divide_decimal_result():
 def test_divide_by_zero():
     with pytest.raises(ValueError, match="Cannot divide by zero"):
         divide(10, 0)
+
+def test_power():
+    assert power(2, 3) == 8
+
+
+def test_power_zero_exponent():
+    assert power(5, 0) == 1
+
