@@ -1,4 +1,5 @@
 import argparse
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -12,12 +13,14 @@ def run(command: list[str], check: bool = True, capture: bool = False):
         check=False,
         capture_output=capture,
     )
+
     if check and result.returncode != 0:
         print(f"\n❌ Command failed: {' '.join(command)}")
         if capture:
             print(result.stdout)
             print(result.stderr)
         sys.exit(result.returncode)
+
     return result
 
 
@@ -29,6 +32,7 @@ def ensure_repo_root():
 
 def ensure_clean_git():
     result = run(["git", "status", "--porcelain"], capture=True)
+
     if result.stdout.strip():
         print("❌ Git working tree is not clean. Commit or restore changes first.")
         print(result.stdout)
@@ -37,6 +41,7 @@ def ensure_clean_git():
 
 def ensure_changes_exist():
     result = run(["git", "status", "--porcelain"], capture=True)
+
     if not result.stdout.strip():
         print("❌ No file changes found. Edit files first, then run finish.")
         sys.exit(1)
@@ -77,6 +82,7 @@ def finish(args):
     ensure_repo_root()
 
     branch = current_branch()
+
     if branch == "main":
         print("❌ You are on main. Create/use a feature branch first.")
         sys.exit(1)
@@ -112,6 +118,60 @@ def finish(args):
     print("gh pr checks")
 
 
+def status(_args):
+    print("🤖 Workflow Agent: status")
+    ensure_repo_root()
+
+    branch = current_branch()
+    print(f"\n🌿 Current branch: {branch}")
+
+    git_status = run(["git", "status", "--porcelain"], capture=True)
+
+    if git_status.stdout.strip():
+        print("\n📝 Working tree changes:")
+        print(git_status.stdout.rstrip())
+    else:
+        print("\n✅ Working tree is clean.")
+
+    pr_result = run(
+        [
+            "gh",
+            "pr",
+            "view",
+            "--json",
+            "number,title,state,url,headRefName",
+        ],
+        check=False,
+        capture=True,
+    )
+
+    if pr_result.returncode != 0:
+        print("\nℹ️ No pull request found for the current branch.")
+        return
+
+    pr = json.loads(pr_result.stdout)
+
+    print("\n🔀 Pull request:")
+    print(f"   #{pr['number']} {pr['title']}")
+    print(f"   State: {pr['state']}")
+    print(f"   URL: {pr['url']}")
+
+    checks = run(
+        ["gh", "pr", "checks", str(pr["number"])],
+        check=False,
+        capture=True,
+    )
+
+    print("\n🧪 CI checks:")
+
+    if checks.stdout.strip():
+        print(checks.stdout.rstrip())
+    elif checks.stderr.strip():
+        print(checks.stderr.rstrip())
+    else:
+        print("No CI checks found.")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Local GitHub workflow agent")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -122,10 +182,18 @@ def main():
     start_parser.add_argument("--branch", required=True)
     start_parser.add_argument("--commit-message", required=True)
 
-    finish_parser = subparsers.add_parser("finish", help="Run checks, commit, push, PR")
+    finish_parser = subparsers.add_parser(
+        "finish",
+        help="Run checks, commit, push, and create a PR",
+    )
     finish_parser.add_argument("--commit-message", required=True)
     finish_parser.add_argument("--pr-title", required=True)
     finish_parser.add_argument("--pr-body", required=True)
+
+    subparsers.add_parser(
+        "status",
+        help="Show branch, working tree, pull request, and CI status",
+    )
 
     args = parser.parse_args()
 
@@ -133,6 +201,8 @@ def main():
         start(args)
     elif args.command == "finish":
         finish(args)
+    elif args.command == "status":
+        status(args)
 
 
 if __name__ == "__main__":
